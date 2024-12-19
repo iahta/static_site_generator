@@ -1,6 +1,8 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
+from textnode import TextType, TextNode
+from htmlnode import text_node_to_html_node
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -69,32 +71,62 @@ class TestLeafNode(unittest.TestCase):
              node = LeafNode(None, "Hello, world!")
              self.assertEqual(node.to_html(), "Hello, world!")
 
+class TestParentNode(unittest.TestCase):
+        def test_to_html(self):
+            node = ParentNode(
+                  "p",
+                [
+                    LeafNode("b", "Bold text"),
+                    LeafNode(None, "Normal text"),
+                    LeafNode("i", "italic text"),
+                    LeafNode(None, "Normal text"),
+                ],
+            )
+
+            self.assertEqual(node.to_html(), "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>")
          
-       
+            node2 = ParentNode(
+                 "p",
+                 [
+                      LeafNode("h5", "Header to the Paragraph"),
+                      ParentNode(
+                           "p",
+                           [
+                                LeafNode("i", "italic text"),
+                                LeafNode(None, "Normal text"),
+                                ParentNode(
+                                     "ol",
+                                     [
+                                          LeafNode("li", "this"),
+                                          LeafNode("li", "is"),
+                                          LeafNode("li", "a"),
+                                          LeafNode("li", "list"),
+                                     ])
+                           ]
+                           )
+                 ]
+            )
+            
+            self.assertEqual(node2.to_html(), "<p><h5>Header to the Paragraph</h5><p><i>italic text</i>Normal text<ol><li>this</li><li>is</li><li>a</li><li>list</li></ol></p></p>")
+        
+        
+        def test_no_children(self):
+             node = ParentNode("p", None)
+             with self.assertRaises(ValueError):
+                  node.to_html()
+                 
+        def test_no_tag(self):
+             node = ParentNode(None, ["theres, no, tag"])
+             with self.assertRaises(ValueError):
+                  node.to_html()
+      
+class TestTextToHTML(unittest.TestCase):
+     def test_text_node_to_html_node(self):
+        node2 = TextNode("This is a text node", TextType.BOLD)
+        node = TextNode("This is a text node", TextType.BOLD)
+        self.assertEqual(text_node_to_html_node(node), LeafNode("b", "This is a text node"))
 
-        """
-        node2 = HTMLNode("p", "Paragraph", "No children", {"p": "paragraph", "d":"dinosuar"})
-        test = HTMLNode.props_to_html(node)
-        test2 = HTMLNode.props_to_html(node2)
-        result = "href=www.href.com a=a for awesome "
-        result2 = "p=paragraph d=dinosuar "
-        
-        self.assertEqual(test2, result2)
-        self.assertEqual(HTMLNode.__repr__(node), ("h1", "This is the value inside of h1", ["list of objects"], {"href":"www.href.com", "a":"a for awesome"}))
-"""
 
-    #def test_props(self):
-        
-        
-
-""" self.props_to_html(node)
-        self.to_htmL(node)
-        
-        self.to_html(node2)
-        self.props_to_html(node2)
-        self.__repr__(node)
-        self.__repr__(node2)
-"""
 
 if __name__ == "__main__":
     unittest.main()
