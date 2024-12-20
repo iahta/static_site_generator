@@ -1,8 +1,9 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from htmlnode import HTMLNode, LeafNode, ParentNode, text_node_to_html_node
 from textnode import TextType, TextNode
-from htmlnode import text_node_to_html_node
+
+
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -121,12 +122,46 @@ class TestParentNode(unittest.TestCase):
                   node.to_html()
       
 class TestTextToHTML(unittest.TestCase):
-     def test_text_node_to_html_node(self):
-        node2 = TextNode("This is a text node", TextType.BOLD)
-        node = TextNode("This is a text node", TextType.BOLD)
-        self.assertEqual(text_node_to_html_node(node), LeafNode("b", "This is a text node"))
+        text_node = TextNode("Hello, world!", TextType.TEXT)
+        html_node = text_node_to_html_node(text_node)
+        assert html_node.tag is None
+        assert html_node.value == "Hello, world!"
+  
+        text_node = TextNode("Bold text", TextType.BOLD)
+        html_node = text_node_to_html_node(text_node)
+        assert html_node.tag == "b"
+        assert html_node.value == "Bold text"
+    
+    # Continue with other types...
+        text_node = TextNode("Italic text", TextType.ITALIC)
+        html_node = text_node_to_html_node(text_node)
+        assert html_node.tag == "i"
+        assert html_node.value == "Italic text"
+        
+        text_node = TextNode("Code text", TextType.CODE)
+        html_node = text_node_to_html_node(text_node)
+        assert html_node.tag == "code"
+        assert html_node.value == "Code text"
+        
+        text_node = TextNode("Link", TextType.LINK)
+        html_node = text_node_to_html_node(text_node)
+        assert html_node.tag == "a"
+        assert html_node.value == "Link"
+        assert html_node.props == {"href": text_node.url}
 
-
+        text_node = TextNode("Image", TextType.IMAGE)
+        html_node = text_node_to_html_node(text_node)
+        assert html_node.tag == "img"
+        assert html_node.value == ""
+        assert html_node.props == {"src": text_node.url, "alt": text_node.text}
+    
+        
+        invalid_node = TextNode("test", None)
+        try:
+            text_node_to_html_node(invalid_node)
+            assert False, "Expected ValueError"
+        except ValueError as e:
+            assert str(e) == f"Invalid text type: {None}"
 
 if __name__ == "__main__":
     unittest.main()
