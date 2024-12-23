@@ -94,3 +94,63 @@ def extract_markdown_links(text):
     link = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
     return link
 
+
+
+
+def split_nodes_image(old_nodes):
+    new_list = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_list.append(node)
+            continue
+        original_text = node.text
+        images = extract_markdown_images(node.text)
+        for image in images:
+            image_link = image[1]
+            image_alt = image[0]
+            text_split = original_text.split(f"![{image_alt}]({image_link})", 1)
+            if text_split[0] != "":
+                new_list.append(TextNode(text_split[0], TextType.TEXT))
+            new_list.append(TextNode(image_alt, TextType.IMAGE, image_link))
+            original_text = text_split[1]
+        if original_text:
+            new_list.append(TextNode(original_text, TextType.TEXT))
+    return new_list
+
+def split_nodes_link(old_nodes):
+    new_list = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_list.append(node)
+            continue
+        original_text = node.text
+        links = extract_markdown_links(node.text)
+        for link in links:
+            link_url = link[1]
+            link_title = link[0]
+            text_split = original_text.split(f"[{link_title}]({link_url})", 1)
+            if text_split[0] != "":
+                new_list.append(TextNode(text_split[0], TextType.TEXT))
+            new_list.append(TextNode(link_title, TextType.LINK, link_url))
+            original_text = text_split[1]
+        if original_text:
+            new_list.append(TextNode(original_text, TextType.TEXT))
+    return new_list
+
+if __name__ == "__main__":
+    #text = TextNode("This is a text with multiple ![link1](https://www.link1.com) or ![link2](www.bootlink2.com) and it has extra at the end", TextType.TEXT)
+    node = TextNode(
+        "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+        TextType.TEXT,
+    )   
+    print(split_nodes_link([node]))
+    #print(split_nodes_image([text]))
+    #print(split_nodes_image([text]))
+# [
+#     TextNode("This is text with a link ", TextType.TEXT),
+#     TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+#     TextNode(" and ", TextType.TEXT),
+#     TextNode(
+#         "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+#     ),
+# ]
