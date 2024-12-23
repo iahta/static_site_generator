@@ -5,6 +5,7 @@ from split_nodes import (
     extract_markdown_links,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 
 from textnode import TextNode, TextType
@@ -81,9 +82,6 @@ class TestInlineMarkdown(unittest.TestCase):
             new_nodes,
         )
         
-  
-        
-      
 
     """
         self.assertListEqual(
@@ -188,8 +186,49 @@ class TestInlineMarkdown(unittest.TestCase):
         )
          
         
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        result = text_to_textnodes(text)
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            result
+        )
+      
+
+    def test_empty_string(self):
+        nodes = text_to_textnodes("")
+        assert len(nodes) == 1
+        assert nodes[0].text == ""
+        assert nodes[0].text_type == TextType.TEXT
+        assert nodes[0].url == None
 
 
+    def test_empty_delimiters(self):
+    # Empty bold
+        with self.assertRaises(ValueError):
+            text_to_textnodes("**")
+        
+
+        nodes = text_to_textnodes("[]()") 
+        assert len(nodes) == 1
+        assert nodes[0].text == ""
+        assert nodes[0].text_type == TextType.LINK
+        assert nodes[0].url == "" 
+
+    # Empty code block
+        with self.assertRaises(ValueError):
+            text_to_textnodes("`")
 
 if __name__ == "__main__":
     unittest.main()
