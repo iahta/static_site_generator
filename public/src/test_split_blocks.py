@@ -105,6 +105,10 @@ This is the same paragraph on a new line
         block_type = block_to_block_type(text)
         self.assertEqual(block_type, "unordered list")
 
+        text = "1. An ordered list\n2. has numbers\n3. and a period"
+        block_type = block_to_block_type(text)
+        self.assertEqual(block_type, "ordered list")
+
 
 if __name__ == "__main__":
     unittest.main()

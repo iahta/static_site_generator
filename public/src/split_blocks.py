@@ -37,7 +37,13 @@ def block_to_block_type(text_block):
             if not (line.startswith("*") or line.startswith("-")):
                 return block_type_paragraph
         return block_type_unordered_list
-
+    if text_block.startswith("1."):
+        i = 1
+        for line in lines:
+            if not line.startswith(f"{i}."):
+                return block_type_paragraph
+            i += 1
+        return block_type_ordered_list
 
 #if __name__ == "__main__":
 #    block_to_block_type("``` This is a code block\n```")     
