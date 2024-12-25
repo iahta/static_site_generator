@@ -150,7 +150,6 @@ def split_nodes_link(old_nodes):
 
 def text_to_textnodes(text):
     markdown_text = TextNode(text, TextType.TEXT)
-    text_nodes = []
     bold = split_nodes_delimiter([markdown_text], "**", TextType.BOLD)
     italic = split_nodes_delimiter(bold, "*", TextType.ITALIC)
     code = split_nodes_delimiter(italic, "`", TextType.CODE)
@@ -162,13 +161,13 @@ def text_to_textnodes(text):
 
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     #text = TextNode("This is a text with multiple ![link1](https://www.link1.com) or ![link2](www.bootlink2.com) and it has extra at the end", TextType.TEXT)
-    node = TextNode(
-        "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
-        TextType.TEXT,
-    )   
-    print(split_nodes_link([node]))
+    #node = TextNode(
+    #    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+    #    TextType.TEXT,
+    #)   
+    #print(split_nodes_link([node]))
     #print(split_nodes_image([text]))
     #print(split_nodes_image([text]))
 # [

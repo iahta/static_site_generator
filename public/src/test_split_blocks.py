@@ -1,6 +1,6 @@
 import unittest
 
-from split_blocks import markdown_to_blocks, block_to_block_type
+from split_blocks import markdown_to_blocks, block_to_block_type, markdown_to_html_node
 
 
 class TestMarkdownBlocks(unittest.TestCase):
@@ -101,13 +101,42 @@ This is the same paragraph on a new line
         block_type = block_to_block_type(text)
         self.assertEqual(block_type, "quote")
 
-        text = "*An unrodered list\n-is unordered\n*and not ordered"
+        text = "* An unrodered list\n- is unordered\n* and not ordered"
         block_type = block_to_block_type(text)
         self.assertEqual(block_type, "unordered list")
 
         text = "1. An ordered list\n2. has numbers\n3. and a period"
         block_type = block_to_block_type(text)
         self.assertEqual(block_type, "ordered list")
+
+    def test_markdown_to_html(self):
+        test_markdown = """# My Cool Heading
+
+This is a paragraph with **bold** and *italic* text.
+
+* First item
+* Second item with **bold**
+* Third item with *italic*
+
+1. Ordered first
+2. Ordered second
+
+> Here's a quote
+> With multiple lines
+
+```python
+def hello():
+    print("Hello World!")
+```"""
+
+# Try printing the output of your function:
+        html_node = markdown_to_html_node(test_markdown)
+        result = html_node.to_html()
+        self.assertEqual(result, """<div><h1>My Cool Heading</h1><p>This is a paragraph with <b>bold</b> and <i>italic</i> text.</p><ul><li>First item</li><li>Second item with <b>bold</b></li><li>Third item with <i>italic</i></li></ul><ol><li>Ordered first</li><li>Ordered second</li></ol><blockquote>Here's a quote
+With multiple lines</blockquote><pre><code>python
+def hello():
+    print("Hello World!")
+</code></pre></div>""" )
 
 
 if __name__ == "__main__":
