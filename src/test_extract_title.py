@@ -1,5 +1,5 @@
 import unittest
-from extract_title import extract_title
+from extract_title import extract_title, generate_pages_recursive
 
 class TestExtractTitle(unittest.TestCase):
     def test_extract_title(self):
@@ -37,3 +37,6 @@ func main(){
 ```"""
         title = extract_title(markdown)
         self.assertEqual(title, "Tolkien Fan Club")
+
+    def test_generate_pages_recursive(self):
+        return generate_pages_recursive("content", "template.html", "public")

@@ -1,11 +1,12 @@
 from textnode import TextNode
-from extract_title import generate_page
+from extract_title import generate_page, generate_pages_recursive
 import os
 import shutil
 
 def main():
     copy_static("static", "public")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    #generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 def copy_static(source_dir, dest_dir):
     if os.path.exists(dest_dir):
