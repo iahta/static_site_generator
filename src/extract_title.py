@@ -45,24 +45,30 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
     for content in content_directory:
         new_path = os.path.join(dir_path_content, content)
         dest_new_path = os.path.join(dest_dir_path, content)
+        
         if os.path.isfile(new_path):
-            with open(new_path) as markdown_file:
-                read_markdown = markdown_file.read()
+            root, ext = os.path.splitext(new_path)
+            print(root)
+            print(ext)
+            if ext == ".md":
+                with open(new_path) as markdown_file:
+                    read_markdown = markdown_file.read()
 
-            html_nodes = markdown_to_html_node(read_markdown)
-            html_string = html_nodes.to_html()
-            title = extract_title(read_markdown)
+                html_nodes = markdown_to_html_node(read_markdown)
+                html_string = html_nodes.to_html()
+                title = extract_title(read_markdown)
 
-            with_title = read_template.replace("{{ Title }}", title)
-            add_content = with_title.replace("{{ Content }}", html_string)
+                with_title = read_template.replace("{{ Title }}", title)
+                add_content = with_title.replace("{{ Content }}", html_string)
 
-            dir_path = os.path.dirname(dest_new_path)
-            if dir_path:
-                os.makedirs(dir_path, exist_ok = True)
-            with open(dest_new_path, 'w') as output_file:
-                output_file.write(add_content)
+
+                dir_path = os.path.dirname(dest_new_path)
+                if dir_path:
+                    os.makedirs(dir_path, exist_ok = True)
+
+                html_dest_path = dest_new_path.replace(".md", ".html")
+                with open(html_dest_path, 'w') as output_file:
+                    output_file.write(add_content)
                 
         if os.path.isdir(new_path):
-            generate_pages_recursive(new_path, template_path, dest_new_path)
-
-        #use this to add the new found dir to the new path full_path = os.path.join(base_dir, filename)
+            generate_pages_recursive(new_path, template_path, dest_new_path)     
